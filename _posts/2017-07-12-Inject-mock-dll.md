@@ -26,10 +26,63 @@ Como a DLL é um ambiente fechado onde o único ponto de entrada são aqueles qu
 
 O único jeito que encontrei foi criar um ponto para injetar o mock dentro da DLL igual estou demonstrando no código abaixo:
 
- gist blogdarkspot/cd34538142d90e6015e006f2c9950ad4 EntryPoint.h 
+~~~c++
+#ifndef __ENTRYPOINT_H_
+#define __ENTRYPOINT_H_
 
- gist blogdarkspot/70b6381a108485cca2f873ff27357087 EntryPoint.cpp
+extern "C" 
+{
+  DECLSPEC bool StartDLL();
+  DECLSPEC bool StopDLL();
+  DECLSPEC bool InjectMock(void *mock);
+}
+#endif
+~~~
+~~~c++
+Service *pService = NULL;
 
+DECLSPEC bool StartDLL()
+{
+    bool ret = true;
+    if(!pService)
+    {
+        if(!(pService = Service::getInstance()))
+        {
+            ret = false;
+        }
+    }
+    return ret;
+}
+
+DECLSPEC bool StopDLL()
+{
+    bool ret = true;
+    if(pService)
+    {
+        if(pService->stop())
+        {
+            delete pSerivce;
+            pService = NULL;
+        }
+        else
+        {
+            ret = false;
+        }
+    }
+    return ret;
+}
+
+DECLSPEC bool InjectMock(void *mock)
+{
+    bool ret = true;
+    pService = static_cast<Service*>(mock);
+    if(!pService)
+    {
+        ret = false;
+    }
+    return ret;
+}
+~~~
 Nota: Acabei omitindo a parte do GTest, pois estou assumindo que esse conhecimento já foi adquirido.
 
 Como podemos ver no código acima foi criado um ponto de entrada chamado InjectMock que recebe um ponteiro void, isso porque estamos usando  o compilador de C que não entende classes. Na função StartDLL só vou tentar pegar uma nova instância se o serviço for NULL, então é importante SEMPRE chamar a função InjectMock antes de dar o start na DLL. Também adicionei uma função para Desativar a DLL.

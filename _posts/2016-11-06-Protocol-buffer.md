@@ -15,9 +15,30 @@ A alguns meses atrás estava me aventurando em um projeto em python na empresa q
 ## O que é o Protocol Buffer? Por que eu utilizaria isso?
 
 Protocol Buffer é uma linguagem criada pela Google que tem a função de serializar estrutura de dados. Parecido como escrever um arquivo XML e depois enviar ele, só que o proto buffer é muito mais rápido (20 a 100 vezes), menor (3 a 10 vezes) e você utiliza ele como uma classe que é muito mais fácil de programar, que que ter que ficar navegando naqueles nós do XML, como você acessar os dados via classe o código fica também mais legível. Abaixo temos um exemplo de declaração de um arquivo Proto Buffer que tem a extensão `.proto`.
-
-gist blogdarkspot/d8d3f62bf5d2a9a9ffec87be6d24cbe2 addressbook.proto
-
+~~~
+syntax = "Proto3";
+package Tutorial;
+    
+message Person {
+  string name     = 1;
+  int32 id        = 2;
+  string email    = 3;
+}    
+  enum PhoneType {
+    MOBILE  = 0;
+    HOME    = 1;
+    WORK    = 2;
+  }
+        
+  message PhoneNumber {
+    string number   = 1;
+    PhoneType type  = 2;
+  }
+    
+  repeated PhoneNumber phone  = 4;
+    
+}
+~~~
 
 De cara já podemos ver que essa declaração é muito mais amigável e intuitiva que um arquivo XML (pelo menos para mim é). A primeira linha é importante já que atualmente existe duas versões do Protocol Buffer (proto2 e proto3), caso linha syntax seja omitida o compilador irá usar o proto2 como default.
 
@@ -55,21 +76,184 @@ Assim que a compilação ocorrer com sucesso será gerado os arquivos necessári
 A seguir um exemplo de utilização do protocol buffer.
 
 Programa de escrita de arquivo
+~~~ c++
+#include <iostream>
+#include <fstream>
+#include <string>
+#include "addressbook.pb.h"
 
- gist blogdarkspot/f2a3e51d79690d3f60c61e983875855d write.cc 
+using namespace std;
+
+void PromptForAddress(protobuf_example::Person * person) 
+{
+    cout << "Enter person ID number: ";
+    int id;
+    cin >> id;
+    person->set_id(id);
+    cin.ignore(256, '\n');
+
+    cout << "Enter name: ";
+    getline(cin, *person->mutable_name());
+
+    cout << "Enter email address (blank for none): ";
+    string email;
+    getline(cin, email);
+    if (!email.empty()) person->set_email(email);
+
+    while(true) 
+    {
+        cout << "Enter a phone number (or leave blank to finish): ";
+        string number;
+        getline(cin, number);
+
+        if(number.empty()) break;
+
+        protobuf_example::Person::PhoneNumber* phone_number = person->add_phone();
+        phone_number->set_number(number);
+        
+        cout << "Is this a mobile, home or work phone? ";
+        string type;
+        getline(cin, type);
+        
+        if (type == "mobile")
+        {
+            phone_number->set_type(protobuf_example::Person::MOBILE);
+        }
+        else if (type == "home")
+        {
+            phone_number->set_type(protobuf_example::Person::HOME);
+        }
+        else if (type == "work")
+        {
+            phone_number->set_type(protobuf_example::Person::WORK);
+        }
+        else
+        {
+            cout << "Unkown phone type" << endl;
+        }
+    }
+}
+
+
+int main(int argc, char *argv[])
+{
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+    if (argc != 2)
+    {
+        cerr << "Usage : " << argv[0] << " ADDRESS_BOOK_FILE"  << endl;
+        return -1;
+    }
+
+    protobuf_example::AddressBook address_book;
+
+    {
+        fstream input(argv[1], ios::in | ios::binary);
+        if(!input)
+        {
+            cout << argv[1] << " : file not found" << endl;
+        } else if (!address_book.ParseFromIstream(&input))
+        {
+            cerr << "Failed to parse address book. " << endl;
+            return -1;
+        }
+
+    }
+
+    PromptForAddress(address_book.add_person());
+
+    {
+        fstream output(argv[1], ios::out | ios::trunc | ios::binary);
+        if (!address_book.SerializeToOstream(&output))
+        {
+            cerr << "Failed to write address book " << endl;
+            return -1;
+        }
+    }
+
+
+    google::protobuf::ShutdownProtobufLibrary();
+
+    return 0;
+}
+~~~
 
 Programa de leitura de arquivo.
 
- gist blogdarkspot/c16e63303875dae19207601546196db6 read.cc
+~~~c++
+#include <iostream>
+#include <fstream>
+#include <string>
+#include "addressbook.pb.h"
+
+using namespace std;
 
 
-##Conclusão
+void ListPeople( const protobuf_example::AddressBook& _address_book)
+{
+    for (int i =0; i < _address_book.person_size(); i++)
+    {
+        const protobuf_example::Person& person = _address_book.person(i);
+
+        cout << "Person ID" << person.id() << endl;
+        cout << "Name     " << person.name() << endl;
+        cout << " E-mail address: " << person.email() << endl;
+
+        for (int j = 0; j < person.phone_size(); j++)
+        {
+            const protobuf_example::Person::PhoneNumber& phone = person.phone(j);
+
+            switch(phone.type())
+            {
+                case protobuf_example::Person::MOBILE: 
+                    cout << "   Mobile phone #: "; break;
+                case protobuf_example::Person::HOME:
+                    cout << "   Home phone #: "; break;
+                case protobuf_example::Person::WORK:
+                    cout << "   Work phone #: "; break;
+            }
+            cout << phone.number() << endl;
+        }
+    }
+}
+
+
+int main(int argc, char *argv[])
+{
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+    if (argc != 2)
+    {
+        cerr << "Usage: " << argv[0] << " ADDRESS_BOOK_FILE" << endl;
+        return -1;
+    }
+
+    protobuf_example::AddressBook address_book;
+
+    {
+        fstream input(argv[1], ios::in | ios::binary);
+        if (!address_book.ParseFromIstream(&input))
+        {
+            cerr << "Failed to parse address book. " << endl;
+            return -1;
+        }
+    }
+
+    ListPeople(address_book);
+
+    google::protobuf::ShutdownProtobufLibrary();
+
+    return 0;
+}
+~~~
+
+## Conclusão
 
 Protocol Buffer é mais fácil de entender na parte do código, mais rápido na hora do parse e tem um tamanho reduzido em comparação ao binário de um XML, mas como o próprio site da Google comenta em alguns pontos o protocol buffer não é tão vantajoso como trabalhar trabalhar junto com HTML por exemplo e ele não é tão compreensível se você tentar olhar a classe gerada pelo compilador, somente a estrutura do arquivo .proto é bem legível. Em projetos que envolvem comunicação backend e precisa de um bom desempenho ele se mostrou bem favorável!.
 
 
 
-#Referências
+# Referências
 
 [Protocol Buffer](https://developers.google.com/protocol-buffers/)
 

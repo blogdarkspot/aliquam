@@ -19,15 +19,195 @@ No meu [último post](https://blogdarkspot.github.io/Inject-mock-dll) eu falei s
 
 Por incresça que parivel eu achei uma parte da solução do problema na documentação… Sim, isso é sério, as vezes ler a documentação ajuda. Existe um tópico que fala sobre a criação de classes fakes para executar alguma lógica mais complexa que só o mock não trata.
 
-gist blogdarkspot/7ce44306dfb3b8630839fba00a1eddcb google_mock_example.h 
+~~~c++
+using ::testing::_;
+using ::testing::Invoke;
+
+class Foo {
+ public:
+  virtual ~Foo() {}
+  virtual char DoThis(int n) = 0;
+  virtual void DoThat(const char* s, int* p) = 0;
+};
+
+class FakeFoo : public Foo {
+ public:
+  virtual char DoThis(int n) {
+    return (n > 0) ? '+' :
+        (n < 0) ? '-' : '0';
+  }
+
+  virtual void DoThat(const char* s, int* p) {
+    *p = strlen(s);
+  }
+};
+
+class MockFoo : public Foo {
+ public:
+  // Normal mock method definitions using Google Mock.
+  MOCK_METHOD1(DoThis, char(int n));
+  MOCK_METHOD2(DoThat, void(const char* s, int* p));
+
+  // Delegates the default actions of the methods to a FakeFoo object.
+  // This must be called *before* the custom ON_CALL() statements.
+  void DelegateToFake() {
+    ON_CALL(*this, DoThis(_))
+        .WillByDefault(Invoke(&fake_, &FakeFoo::DoThis));
+    ON_CALL(*this, DoThat(_, _))
+        .WillByDefault(Invoke(&fake_, &FakeFoo::DoThat));
+  }
+ private:
+  FakeFoo fake_;  // Keeps an instance of the fake in the mock.
+};
+~~~
 
 Com essa solução acima consegui achar uma luz no fim do mock. Posso criar uma classe fake e implementar a thread para simular o funcionamento.
 
-gist blogdarkspot/a01d70abac7822bd1b18c8d92ef73214 mock_call_mock_one.h
+~~~c++
+class ActiveMQManagerInterface
+{
+
+public:
+
+	virtual void connectToServer() = 0;
+	virtual void sendMessageToServer() = 0;
+	virtual bool isConnected() = 0;
+	virtual bool start() = 0;
+	virtual bool stop() = 0;
+	virtual void addQueue(const std::string&) = 0;
+	virtual ~ActiveMQManagerInterface()
+	{
+	}
+};
+
+class ActiveMQManagerFake : public ActiveMQManagerInterface {
+
+public:
+	virtual void connectToServer() {
+	};
+
+	virtual void sendMessageToServer() {
+	};
+
+	virtual bool isConnected() {
+		return true;
+
+	};
+
+	virtual bool start() {
+		return true;
+	};
+
+	virtual bool stop() {
+		return true;
+	};
+
+	virtual void addQueue(const std::string&) {
+	};
+};
+
+
+class ActiveMQManagerMock : public ActiveMQManagerInterface {
+
+private:
+	ActiveMQManagerFake fake;
+public:
+	MOCK_METHOD0(getInstance, ActiveMQManagerInterface*());
+	MOCK_METHOD0(isConnected, bool());
+	MOCK_METHOD0(start, bool());
+	MOCK_METHOD0(stop, bool());
+	MOCK_METHOD1(addQueue, void(const string&));	
+	MOCK_METHOD0(connectToServer, void());
+	MOCK_METHOD0(sendMessageToServer, void());
+  
+  void delegateToFake()
+	{
+		ON_CALL(*this, connectToServer()).WillByDefault(Invoke(&fake, &ActiveMQManagerFake::connectToServer));
+	}
+	
+};
+~~~
 
 Então eu basicamente repliquei a solução exemplo do google mocks para o meu projeto, porém ainda existe mais um problema, preciso chamar os outros métodos do mock normal dentro da classe Fake. Para resolver esse problema eu passei o ponteiro do meu mock para dentro da classe Fake.
 
- gist blogdarkspot/6d3bf61142f86d21d4079649774d3cf5 mock_call_mock_final.h 
+~~~c++
+class ActiveMQManagerFake : public ActiveMQManagerInterface {
+private:
+	ActiveMQManagerInterface* mock;
+public:
+
+	void setMock(ActiveMQManagerInterface* mock) {
+		if (mock != NULL) {
+			this->mock = mock;
+		}
+	}
+
+	virtual void connectToServer() {
+		if (mock)
+		{
+			mock->sendMessageToServer();
+			mock->stop();
+		}
+	};
+
+	virtual void sendMessageToServer() {
+	};
+
+	virtual bool isConnected() {
+		return true;
+
+	};
+
+	virtual bool start() {
+		if (mock)
+		{
+			if (mock->isConnected())
+			{
+				mock->sendMessageToServer();
+			}
+			else
+			{
+				mock->connectToServer();
+				if (mock->isConnected())
+				{
+					mock->sendMessageToServer();
+				}
+			}
+			return true;
+		}
+		return false;
+	};
+
+	virtual bool stop() {
+		return true;
+	};
+
+	virtual void addQueue(const std::string&) {
+	};
+
+};
+
+class ActiveMQManagerMock : public ActiveMQManagerInterface {
+
+private:
+	ActiveMQManagerFake fake;
+public:
+	MOCK_METHOD0(getInstance, ActiveMQManagerInterface*());
+	MOCK_METHOD0(isConnected, bool());
+	MOCK_METHOD0(start, bool());
+	MOCK_METHOD0(stop, bool());
+	MOCK_METHOD1(addQueue, void(const string&));
+	MOCK_METHOD0(connectToServer, void());
+	MOCK_METHOD0(sendMessageToServer, void());
+
+	void delegateToFake()
+	{
+		fake.setMock(this);
+		ON_CALL(*this, start()).WillByDefault(Invoke(&fake, &ActiveMQManagerFake::start));
+	}
+	
+};
+~~~
 
 Agora eu adicionei mais um método dentro da classe fake com o intuito de passar uma referência do mock instanciado, assim é possível chamar o mock dentro da classe fake e isso resolve o problema de chamar métodos dentro de métodos com mock sem precisar em alterar em nada a lógica do programa original.
 

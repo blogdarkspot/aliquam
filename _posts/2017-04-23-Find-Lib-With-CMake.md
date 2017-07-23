@@ -51,9 +51,9 @@ Agora o nosso diretório será reconhecido para a busca dos packages, em seguida
 
 Se você usar o cmake-gui ou o ccmakke as variáveis irão aparecer no cache!
 
-![ccmake imagem 1](img/posts/2017-04-23-find-lib-with-cmake/find-lib-with-cmake-1.png)
+![ccmake imagem 1](../img/posts/2017-04-23-find-lib-with-cmake/find-lib-with-cmake-1.png)
 
-![ccmake imagem 2](img/posts/2017-04-23-find-lib-with-cmake/find-lib-with-cmake-2.png)
+![ccmake imagem 2](../img/posts/2017-04-23-find-lib-with-cmake/find-lib-with-cmake-2.png)
 ## Referências
 
 [CMake Wiki](https://cmake.org/Wiki/CMake:How_To_Find_Libraries)

@@ -4,23 +4,23 @@
 ##########################################
 
 # Set this for Copyright in the footer
-owner: Name Surname
+owner: Fábio da Silva Santana
 
 # Optional quote in the footer
 # To disable set enable to false
 quote:
   enable: true
-  quote: Some fancy quote
-  author: John Doe
+  quote: A dúvida é o principio da sabedoria
+  author: Aristóteles
 
 # Set this to your main site title. If page doesn't have its own title,
 # then this title will be used.
-title: Aliquam Theme
+title: Darkspot Blogue
 
 
 # Following needed for disqus integration
 # Set your 'disqus' account name
-disqus:
+disqus: blogdarkspot
 
 # Uncomment if deployed locally
 #url: https://localhost:4000
@@ -35,7 +35,7 @@ url:
 baseurl:
 
 # Change this to your google analytics ID
-google_analytics:
+google_analytics: UA-103040028-1
 
 # Contact form pupublic key
 contact_PK:
@@ -51,7 +51,7 @@ paginate: 5
 permalink: /:categories/:title
 
 # MathJax support
-math: false
+math: true
 
 collections:
 - definitions

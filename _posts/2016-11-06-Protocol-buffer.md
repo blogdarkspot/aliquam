@@ -1,12 +1,12 @@
 ---
 layout: post
 title: "Serializando dados de maneira prática, eficiente e rápida"
-subtitle: ""
+description: ""
 date: 2016-11-06 21:20:00
 author: "Fábio da Silva Santana"
-header-img: "img/posts/proto-buffer-capa.jpg"
+category: programacao
 comments: true
-tags: [ C++, Protobuff ]
+tags: [ c++, protobuff ]
 ---
 Pelo titulo parece que o assunto desse artigo é como fazer as coisas de maneira prática rápida e eficiente, porém essas são as características desse tipo de serialização de dados (O processo, só é pratico e eficiente depois que você se acostuma).
 

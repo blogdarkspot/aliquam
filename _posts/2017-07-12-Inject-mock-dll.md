@@ -1,18 +1,18 @@
 ---
 layout: post
 title: "Testando DLL Parte 1"
-subtitle: "Injetando Mock na DLL"
+description: Injetando Mock na DLL
 date: 2017-07-12 23:20:00
 author: "Fábio da Silva Santana"
-header-img: "img/posts/header-test-post.jpg"
+category: programacao
 comments: true
-tags: [ C++, Visual Studio, DLL ]
+tags: [ c++, visual studio, dll ]
 ---
 ## A motivação de tudo isso.
 
 Voltando a trabalhar em um projeto antigo na atual empresa onde presto serviço, resolvi atacar os problemas dessa Issue de uma maneira mais profissional possível, usando unit test. Afinal no meu último projeto que eu estava trabalhando a falta de testes gerou muita dor de cabeça, senti na pele o que é bug resolvido aparecer novamente e isso é frustrante.
 
-![charge tmux](img/posts/unit-test-meme.jpeg)
+![charge tmux](../img/posts/unit-test-meme.jpeg)
 
 ## Sobre o Projeto.
 

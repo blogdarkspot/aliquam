@@ -1,19 +1,19 @@
 ---
 layout: post
 title: "Testando DLL parte 2"
-subtitle: "Classe Fake e Métodos chamando Métodos"
+description: "Classe Fake e Métodos chamando Métodos"
 date: 2017-07-17 23:58:00
 author: "Fábio da Silva Santana"
-header-img: "img/posts/header-test-post.jpg"
+category: programacao
 comments: true
-tags: [ C++, Visual Studio, DLL ]
+tags: [ c++, visual studio, dll ]
 ---
 
 ## Descrição do problema.
 
 No meu [último post](https://blogdarkspot.github.io/Inject-mock-dll) eu falei sobre como injetar um mock dentro de uma dll para testar um código fechado. Agora o problema é outro. Essa minha dll tem uma thread que chama vários métodos da classe para executar uma lógica. Então agora temos o problema que é métodos que chamam métodos, como resolver isso, já que os métodos mocks não tem implementação nenhuma?
 
-![test-yoo](img/posts/you-need-some-tests-yo.jpg)
+![test-yoo](../img/posts/you-need-some-tests-yo.jpg)
 
 ## Minha tática para atacar o problema.
 

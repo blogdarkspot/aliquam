@@ -1,12 +1,12 @@
 ---
 layout:     post
 title:      "Procurando e adicioando Libs com CMake"
-subtitle:   ""
+description:   ""
 date:       2017-04-23 18:41:00
 author:     "Fábio da Silva Santana"
-header-img: "img/posts/2017-04-23-find-lib-with-cmake/find-lib-with-cmake-background.jpg"
+category:  programacao
 comments: true
-tags: [ CMake, C++]
+tags: [ cmake, c++]
 ---
 
 # Usando libs externas

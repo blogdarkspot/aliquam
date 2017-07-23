@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "Serializando dados de maneira prática, eficiente e rápida"
-description: ""
+title: "Serializando com protobuff"
+description: "Serializando dados de maneira prática, eficiente e rápida"
 date: 2016-11-06 21:20:00
 author: "Fábio da Silva Santana"
 category: programacao

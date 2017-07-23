@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      "Procurando e adicioando Libs com CMake"
-description:   ""
+title: Libs com Cmake 
+description: Procurando e adicioando Libs com CMake
 date:       2017-04-23 18:41:00
 author:     "Fábio da Silva Santana"
 category:  programacao

@@ -31,26 +31,17 @@ Want real life example? [check this out](http://grrinchas.github.io/)
 ## <a name="installation"></a>Installation
 
 #### Method 1: new master's repository (The Best)
+1. [Pre Requisit](#prerequisit)
+2. [See configuration](#configuration).
 
-1. First [fork](https://github.com/grrinchas/aliquam/fork) it.
-2. Change your forked repository name _aliquam_ to __userName.github.io__ where
-   __userName__ is your github user name.
-3. Access your new blog via [https://username.github.io](https://username.github.io).
-4. [See configuration](#configuration).
+## <a name="prerequisit"></a>Pre Requisit
 
-#### Method 2: gh-pages in existing repository
-1. Create a new branch called _gh-pages_ in the repository where you want to add a template [managing branches](https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/).
-2. From command line run `git clone https://github.com/grrinchas/aliquam` - this will clone _aliquam_ template to your computer.
-3. Create new branch `git checkout -b gh-pages` where _gh-pages_ will be your branch name.
-4. Add remote, which is your repo from the first step, to your new branch `git remote add gh-pages https://github.com/<yourName>/<yourMaster>/gh-pages`. _yourName_ is your account name and _yourMaster_ is your repository.
-5. Push new branch to remote `git push gh-pages`.
-6. Update `_config.yml` file by changing `baseurl: "<branchName>"` _branchName_ is your branch name where _gh-pages_ resides. See [configuration](#configuration).
-
-#### Method 3: run it locally
-
-1. Download [zip](https://github.com/grrinchas/aliquam/archive/master.zip) or clone it `git clone https://github.com/grrinchas/aliquam`.
-2. Go inside folder and run `jekyll serve` or `bundle exec jekyll s`. This will build a website which you can access [https://localhost:4000](https://localhost:4000). You need to have [Jekyll](https://jekyllrb.com/docs/installation/) installed to do this.
-
+1. Configurate Ruby on Rails(Ubuntu):
+	1. Install some dependencies for Ruby:
+	1. ```
+	sudo apt-get update
+sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev nodejs
+	```
 ## <a name="configuration"></a>Configuration
 
 All configuration is done via `_config.yml` file which you will find in your main repo folder.
@@ -76,3 +67,5 @@ To get your public key:
 
 This project is licensed under the MIT License - see [The MIT License (MIT)](https://opensource.org/licenses/MIT)
 for more details.
+
+#Thanks for  [this guy](https://github.com/grrinchas/aliquam/fork).

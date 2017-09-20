@@ -34,7 +34,7 @@ Na terceira linha é marcadada a variável [CMAKE_INCLUDE_CURRENT_DIR](https://c
 
 Para validar se a configuração esta correta, vamos criar uma espécie de Hello World, só para ver se está tudo Ok.
 
-~~~qrc
+~~~html
 <!DOCTYPE RCC><RCC version="1.0">
   <qresource prefix="/layouts">
     <file>main.qml</file>

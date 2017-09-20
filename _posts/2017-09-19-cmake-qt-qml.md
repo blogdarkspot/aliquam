@@ -16,7 +16,7 @@ Esse é provavelmente o primeiro de alguns outros posts a respeito de configurar
 
 ## Configurações Mínimas do CMake
 
-~~~CMake
+~~~cmake
 cmake_minimum_required(VERSION 3.0)
 project(Nome_do_projeto)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

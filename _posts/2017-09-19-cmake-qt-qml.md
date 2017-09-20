@@ -6,7 +6,7 @@ date: 2017-09-19 23:58:00
 author: "Fábio da Silva Santana"
 category: programacao
 comments: true
-tags: [ c++, cmake, qt, qml ]
+tags: [ c++, cmake]
 ---
 
 

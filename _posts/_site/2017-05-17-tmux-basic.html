@@ -1,0 +1,90 @@
+<h1 id="deixando-o-mouse-de-lado">Deixando o mouse de lado</h1>
+
+<p>Aqui começa uma jornada para deixar aquele “facilitador” na vida de quem usa um computador, o tal do mouse. Depois de alguns anos usando o Linux eu notei que eu conseguia me localizar melhor dentro do sistema através do terminal, após isso comecei a usar um pouco do vim para desenvolver já que alguns amigos diziam ser uma ótima ferramenta para desenvolvimento. Até aí beleza eu tenho o terminal para trabalhar com os arquivos e tenho o vim para editar arquivos, agora só falta algo para gerenciar os terminais, afinal eu faço várias coisas ao mesmo tempo, o que acaba gerando um monte de telas de terminais e eu acabo usando mouse já que o alt+tab não é tão eficiente assim. O tmux veio para solucionar esse problema.
+<img src="../img/posts/2017-05-17-tmux-basic/bhtmux-cartoon.jpg" alt="charge tmux" /></p>
+<h1 id="o-que-é-o-tmux">O que é o Tmux?</h1>
+
+<p>Tmux é um <em>Terminal multiplexer</em>. Com ele é possível em um único ambiente criar vários terminais ou janelas e cada um rodar o seus próprios processos, beleza é possível fazer isso com outros terminais abrindo abas, mas o tmux tem muito mais poder, por exemplo, é possível em uma sessão do tmux rodar um processo e depois deixá-lo em background sem precisar ficar com um monte de telas abertas e depois disso reabrir a janela como se ela nunca tivesse sido fechada antes é possível fazer várias outras coisas também, só que nesse post vamos tratar do básico que é justamente o essa função de manipular sessões, janelas e painéis.</p>
+
+<h1 id="sessões-janelas-e-painéis">Sessões, Janelas e Painéis</h1>
+
+<p>A hierarquia do tmux funciona da seguinte forma: Ao iniciar o tmux a partir de um terminal é criada uma sessão, essa sessão tem uma janela e a janela tem um painel. Nessa hierarquia do tmux ele pode ter n sessões, cada sessão pode ter n janelas e cada janela n painéis.</p>
+
+<h2 id="sessões">Sessões</h2>
+
+<h3 id="criando-sessões">Criando sessões</h3>
+
+<p>Para criar uma sessão no tmux é bem simples, basta digitar <code class="highlighter-rouge">$ tmux</code> e uma sessão anônima começa.
+Também é possível iniciar sessões e nomeá-las  com o seguinte comando <code class="highlighter-rouge">$ tmux new -s &lt;nome_da_sessão&gt;</code>. Assim na barra inferior verde no canto inferior esquerdo irá aparecer o nome da sessão que está atualmente em execução.
+<img src="../img/posts/2017-05-17-tmux-basic/start-new-session.png" alt="Start new session" />
+<img src="../img/posts/2017-05-17-tmux-basic/inside-new-session.png" alt="Inside session" /></p>
+<h3 id="saíndo-das-sessões">Saíndo das sessões</h3>
+
+<p>Sair de uma sessão é simples basta usar o comando <code class="highlighter-rouge">$ exit</code> e você voltará a antiga tela do terminal. Porem é possível sair de uma sessão e não finalizar ela, isso que dizer que ela ficará viva em background, basta usar o comando <code class="highlighter-rouge">$ tmux detach</code> ou o atalho <em>CTRL-b d</em>.
+<img src="../img/posts/2017-05-17-tmux-basic/detach-session.png" alt="Detach session" /></p>
+<h3 id="vendo-lista-de-sessões">Vendo lista de sessões</h3>
+
+<p>Quando saímos de uma sessão e voltamos para o terminal normal novamente é possível fazer o link com a sessão que está executando o background. Para verificar os nomes de todas as sessõesuse <code class="highlighter-rouge">tmux list-session</code>.
+<img src="../img/posts/2017-05-17-tmux-basic/list-session.png" alt="List session" /></p>
+<h3 id="voltando-para-sessão">Voltando para sessão</h3>
+
+<p>Após verificar o nome de todas as sessões ativas para voltar a utilizar alguma delas basta usar <code class="highlighter-rouge">tmux attach -t &lt;nome_da_sessao&gt;</code>.</p>
+
+<p><img src="../img/posts/2017-05-17-tmux-basic/attach-session.png" alt="attach session" /></p>
+
+<h2 id="deletando-sessões">Deletando Sessões</h2>
+
+<p>Para deletar as sessões que estão rodando em background use o comando <code class="highlighter-rouge">$ tmux kill-session -t &lt;nome_da_sessão&gt;</code></p>
+
+<h2 id="janelas">Janelas</h2>
+
+<p>Após iniciar uma sessão uma janela é iniciada junto com essa nova sessão, é possível identificá-la na barra inferior verde ao lado do nome da sessão *blog 0:<nome_da_janela>* em uma sessão é possível ter várias janelas e todas elas ficarão visíveis na barra inferior da sua respectiva sessão.</nome_da_janela></p>
+
+<p><img src="../img/posts/2017-05-17-tmux-basic/list-windows.png" alt="List windows" /></p>
+
+<p>No exemplo acima eu tenho a primeira janela com o vim aberto na segunda o servidor jekyll rodando a última com a pasta de imagens desse post. Eu posso criar, apagar e troca de janela com alguns comandos simples que eu vou explicar a seguir.</p>
+
+<h3 id="adicionando-uma-nova-janela">Adicionando uma nova janela</h3>
+
+<p>Para adicionar é simples basta usar o comando <code class="highlighter-rouge">CTRL-b c</code> que uma nova janela será criada e você é automaticamente enviado para ela.</p>
+
+<h3 id="trocando-de-janela">Trocando de janela</h3>
+
+<p>Após adicionar algumas janelas você pode navegar entre elas usando o comando <code class="highlighter-rouge">CTRL-b &lt;numero 0-9&gt;</code> ou <code class="highlighter-rouge">CTRL-b w</code>, esse último mostra uma lista com todas as janelas em forma de menu aí é só selecionar. Também é possível ir para a próxima janela usando <code class="highlighter-rouge">CTRL-b p</code> e voltar para anterior usando <code class="highlighter-rouge">CTRL-b n</code>.</p>
+
+<p><img src="../img/posts/2017-05-17-tmux-basic/menu-windows.png" alt="menu windows" /></p>
+
+<h3 id="deletando-uma-janela">Deletando uma janela</h3>
+
+<p>Basta digitar <code class="highlighter-rouge">$ exit</code></p>
+
+<h3 id="renomeando-uma-janela">Renomeando uma janela</h3>
+
+<p>É possível dar nome para uma janela se você desejar usando o seguinte atalho <code class="highlighter-rouge">CTRL-b ,</code> , mas após o primeiro comando o nome muda automaticamente novamente.</p>
+
+<h2 id="painéis">Painéis</h2>
+
+<p>Com os painéis é possível dividir uma janela em várias partes e executar coisas diferentes em cada uma dessas partes de maneira bem ágil. Exemplo: em um painel vocÊ tem seu VIM aberto, em outro o terminal para executar o servidor, um outro para debug e um último para navegar entre as pastas isso é muito útil se você tiver um monitor descente na minha opnião no minímo 15” para trabalhar bem com essa função e não ficar tudo muito apertado.</p>
+
+<p><img src="../img/posts/2017-05-17-tmux-basic/painels.png" alt="Painels" /></p>
+
+<p>No exemplo acima eu estou escrevendo esse artigo, enquanto testo o servido e vejo o nome correto das imagens e coloco na pasta correta, tudo isso somente em uma Janela, bem prático, não?</p>
+
+<h3 id="criando-painéis">Criando Painéis</h3>
+
+<p>Para dividir uma janela na horizontal pressione <code class="highlighter-rouge">CTRL-b %</code> para dividir o painel atual na vertical use <code class="highlighter-rouge">CTRL-b "</code>.</p>
+
+<h3 id="navegando-pelos-painéis">Navegando pelos painéis</h3>
+
+<p>Para sair de um painel para outro use <code class="highlighter-rouge">CTRL-b &lt;setas_direcionais&gt;</code> qualquer seta que você usar será o sentido do próximo painel.</p>
+
+<h3 id="deletando-painéis">Deletando painéis</h3>
+
+<p>Para deletar um painel basta pressionar <code class="highlighter-rouge">CTRL-b x</code> uma pergunta de confirmação na parte inferiror irá aparecer perguntando se você deseja realmente excluir esse painel.</p>
+
+<h1 id="conclusão">Conclusão</h1>
+
+<p>O Tmux é uma ferramenta eficiente que ajuda a agilizar o trabalho do dia-a-dia sem a necessidade de ter que ficar trocando de janela toda hora, tirar a mão do teclado e usar o mouse, com os poucos segundos que você vai acumulando em cada vez que você deixa de tocar o mouse ou janela, no final do dia pode ser um grande tempo economizado.</p>
+
+<h1 id="referências">Referências</h1>
+<p><a href="https://pragprog.com/book/bhtmux2/tmux-2">Tmux 2 Productive Mouse-free Development</a></p>

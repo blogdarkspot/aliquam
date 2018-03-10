@@ -1,0 +1,80 @@
+<h2 id="a-motivação-de-tudo-isso">A motivação de tudo isso.</h2>
+
+<p>Voltando a trabalhar em um projeto antigo na atual empresa onde presto serviço, resolvi atacar os problemas dessa Issue de uma maneira mais profissional possível, usando unit test. Afinal no meu último projeto que eu estava trabalhando a falta de testes gerou muita dor de cabeça, senti na pele o que é bug resolvido aparecer novamente e isso é frustrante.</p>
+
+<p><img src="../img/posts/unit-test-meme.jpeg" alt="charge tmux" /></p>
+
+<h2 id="sobre-o-projeto">Sobre o Projeto.</h2>
+
+<p>O projeto é uma DLL que foi desenvolvida com o sdk do visual studio 2010 e meu objetivo era desenvolver uma lógica onde essa DLL tinha que ficar procurando arquivos específicos na máquina e enviando para o servidor.</p>
+
+<h2 id="dificuldade-para-gerar-os-testes">Dificuldade para gerar os Testes.</h2>
+
+<p>Como a DLL é um ambiente fechado onde o único ponto de entrada são aqueles que ela disponibiliza meu problema era: Como gerar um Mock que não é acessado diretamente pelos pontos de entrada da DLL. A idéia era simular o serviço funcionando e fazendo as buscas nas pastas e enviando para o servidor, mas isso está encapsulado pela DLL e eu não tenho acesso direto a esse objeto.</p>
+
+<h2 id="solução">Solução.</h2>
+
+<p>O único jeito que encontrei foi criar um ponto para injetar o mock dentro da DLL igual estou demonstrando no código abaixo:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#ifndef __ENTRYPOINT_H_
+#define __ENTRYPOINT_H_
+</span>
+<span class="k">extern</span> <span class="s">"C"</span> 
+<span class="p">{</span>
+  <span class="n">DECLSPEC</span> <span class="kt">bool</span> <span class="n">StartDLL</span><span class="p">();</span>
+  <span class="n">DECLSPEC</span> <span class="kt">bool</span> <span class="n">StopDLL</span><span class="p">();</span>
+  <span class="n">DECLSPEC</span> <span class="kt">bool</span> <span class="n">InjectMock</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">mock</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">#endif
+</span></code></pre></div></div>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Service</span> <span class="o">*</span><span class="n">pService</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+<span class="n">DECLSPEC</span> <span class="kt">bool</span> <span class="nf">StartDLL</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">bool</span> <span class="n">ret</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pService</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">pService</span> <span class="o">=</span> <span class="n">Service</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()))</span>
+        <span class="p">{</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">DECLSPEC</span> <span class="kt">bool</span> <span class="nf">StopDLL</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">bool</span> <span class="n">ret</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pService</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">pService</span><span class="o">-&gt;</span><span class="n">stop</span><span class="p">())</span>
+        <span class="p">{</span>
+            <span class="k">delete</span> <span class="n">pSerivce</span><span class="p">;</span>
+            <span class="n">pService</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">DECLSPEC</span> <span class="kt">bool</span> <span class="nf">InjectMock</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">mock</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">bool</span> <span class="n">ret</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="n">pService</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Service</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">mock</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pService</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Nota: Acabei omitindo a parte do GTest, pois estou assumindo que esse conhecimento já foi adquirido.</p>
+
+<p>Como podemos ver no código acima foi criado um ponto de entrada chamado InjectMock que recebe um ponteiro void, isso porque estamos usando  o compilador de C que não entende classes. Na função StartDLL só vou tentar pegar uma nova instância se o serviço for NULL, então é importante SEMPRE chamar a função InjectMock antes de dar o start na DLL. Também adicionei uma função para Desativar a DLL.</p>
+
+<h2 id="conclusão">Conclusão.</h2>
+
+<p>Usando esse ponto de entrada esse vai ser o único código extra que você vai precisar usar para injetar o Mock na sua DLL. Isso vai facilitar a parte de simulação de testes sem a necessidade de ter que colocar um monte de código extra para debugar e testar tudo.</p>

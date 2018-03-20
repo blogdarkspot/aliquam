@@ -10,7 +10,7 @@ tags: [c++]
 ---
 
 
-Uma coisa interessante sobre a época de faculdade é que tinha muito bar e junto com ele muitas discussões sobre assunto do qual não entendiamos nada ou tinhamos pouco conhecimento pelo fato de estar inciando em uma nova carreira e ser meros estudantes, o uso do `goto` era um deles, e vinha seguido de um mantra que era "não use pois não é uma boa prática de programação... ohmmmmmm". 
+Uma coisa interessante sobre a época de faculdade é que tinha muito bar e junto com ele muitas discussões sobre assunto do qual não entendiamos nada ou tinhamos pouco conhecimento pelo fato de estar inciando em uma nova carreira e ser meros estudantes. O uso do `goto` era um desses assuntos polêmico e vinha seguido de um mantra que era "não use pois não é uma boa prática de programação... ohmmmmmm". 
 
 Agora quero compartilhar o seguinte exemplo de implmenteção de um método:
 

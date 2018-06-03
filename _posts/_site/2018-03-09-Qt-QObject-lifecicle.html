@@ -1,5 +1,156 @@
-<p>QObject é a base que todo objeto necessita ter para poder usar meta-object system. E é possível organizar esses objetos em uma árvore, quando um se torna pai de outro objeto. Esse post se trata justamente de analisar essa habilidade.</p>
+<p>QObject é a classe base que deve ser herdada para poder usar meta-object system e seus recursos. 
+Um desses recursos é poder organizar objetos em uma árvore.</p>
+
+<h3 id="criando-nossa-árvore-hierarquica-de-qobjects">Criando nossa árvore hierarquica de QObjects</h3>
+
+<p>Desenho da nossa estrutura de estudos</p>
 
 <p><img src="../img/posts/2018-03-09-QObject/object-tree.PNG" alt="imagem-1" /></p>
 
-<p>A Imagem acima demonstra a estrutura que vamos analisar o comportamento.</p>
+<p>Implementação da estrutura</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;QObject&gt;
+#include &lt;QDebug&gt;
+#include &lt;QString&gt;
+</span>
+<span class="kt">void</span> <span class="nf">print_children</span><span class="p">(</span><span class="n">QObject</span> <span class="o">*</span><span class="n">root</span><span class="p">,</span> <span class="kt">int</span> <span class="n">lvl</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">children</span> <span class="o">=</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">();</span>
+    <span class="n">lvl</span><span class="o">++</span><span class="p">;</span>
+    <span class="n">QString</span> <span class="n">qprint</span> <span class="o">=</span> <span class="n">QString</span><span class="p">(</span><span class="s">"level %1 %2"</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">lvl</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">root</span><span class="o">-&gt;</span><span class="n">objectName</span><span class="p">());</span>
+    <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="n">child</span> <span class="o">:</span> <span class="n">children</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">print_children</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">lvl</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">qprint</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">object_names_and_tree</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">QObject</span> <span class="o">*</span><span class="n">parent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">QObject</span><span class="p">;</span>
+    <span class="n">QObject</span> <span class="o">*</span><span class="n">child</span> <span class="o">=</span> <span class="k">new</span> <span class="n">QObject</span><span class="p">(</span><span class="n">parent</span><span class="p">);</span>
+    <span class="n">QObject</span> <span class="o">*</span><span class="n">childOne</span> <span class="o">=</span> <span class="k">new</span> <span class="n">QObject</span><span class="p">(</span><span class="n">child</span><span class="p">);</span>
+    <span class="n">QObject</span> <span class="o">*</span><span class="n">childTwo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">QObject</span><span class="p">(</span><span class="n">child</span><span class="p">);</span>
+    <span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">QObject</span><span class="o">::</span><span class="n">destroyed</span><span class="p">,</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span>
+    <span class="p">{</span>
+        <span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">QString</span><span class="p">(</span><span class="s">"the object %1 has been destroyed"</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">parent</span><span class="o">-&gt;</span><span class="n">objectName</span><span class="p">());</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+    <span class="p">});</span>
+    <span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="n">childOne</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">QObject</span><span class="o">::</span><span class="n">destroyed</span><span class="p">,</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span>
+    <span class="p">{</span>
+        <span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">QString</span><span class="p">(</span><span class="s">"the object %1 has been destroyed"</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">childOne</span><span class="o">-&gt;</span><span class="n">objectName</span><span class="p">());</span>
+        <span class="n">childOne</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+    <span class="p">});</span>
+    <span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="n">childTwo</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">QObject</span><span class="o">::</span><span class="n">destroyed</span><span class="p">,</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span>
+    <span class="p">{</span>
+        <span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">QString</span><span class="p">(</span><span class="s">"the object %1 has been destroyed"</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">childTwo</span><span class="o">-&gt;</span><span class="n">objectName</span><span class="p">());</span>
+        <span class="n">childTwo</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+    <span class="p">});</span>
+    <span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">QObject</span><span class="o">::</span><span class="n">destroyed</span><span class="p">,</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span>
+    <span class="p">{</span>
+        <span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">QString</span><span class="p">(</span><span class="s">"the object %1 has been destroyed"</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">child</span><span class="o">-&gt;</span><span class="n">objectName</span><span class="p">());</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+    <span class="p">});</span>
+    <span class="n">parent</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">QString</span><span class="p">(</span><span class="s">"Parent"</span><span class="p">));</span>
+    <span class="n">child</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">QString</span><span class="p">(</span><span class="s">"Child"</span><span class="p">));</span>
+    <span class="n">childOne</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">QString</span><span class="p">(</span><span class="s">"Child One"</span><span class="p">));</span>
+    <span class="n">childTwo</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">QString</span><span class="p">(</span><span class="s">"Child Two"</span><span class="p">));</span>
+    <span class="n">print_children</span><span class="p">(</span><span class="n">parent</span><span class="p">);</span>
+    <span class="k">delete</span> <span class="n">parent</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">object_names_and_tree</span><span class="p">();</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Na função object_names_and_tree() as primeiras 4 linhas é para a criação da estrutura. O constructor do <code class="highlighter-rouge">QObject</code> é <code class="highlighter-rouge">QObject(QObject *parent = nullptr)</code>, isso facilita na hora de montar nossa árvore hierarquica. Essa maneira de montar a estrutura me deixou curioso para testar o uso de grafos com o <code class="highlighter-rouge">QObject</code> no futuro. O Signal <code class="highlighter-rouge">QObject::destroyed</code> é disparado antes do destructor do objeto. Após isso é nomeado os Objetos para facilitar a visualização do comportamento deles. A função <code class="highlighter-rouge">print_children</code> mostra o level na árvore para cada objeto. O delete dispensa comentários.</p>
+<h3 id="após-a-execucação-do-programa-temos-">Após a execucação do programa temos …</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 -- "level 3 Child One"
+2 -- "level 3 Child Two"
+3 -- "level 2 Child"
+4 -- "level 1 Parent"
+
+5 -- "the object Parent has been destroyed"
+6 -- "the object Child has been destroyed"
+7 -- "the object Child One has been destroyed"
+8 -- "the object Child Two has been destroyed"
+</code></pre></div></div>
+
+<p>As 4 primeiras linhas demostra o nível de hierarquia sendo o Parent o root de toda ela. O mais interessante é as próximas 4 linhas, já que o único objeto liberado é o <code class="highlighter-rouge">parent</code>  mas temos os outros objetos filhos também destruídos. Isso ocorre porque um objeto quando se torna <code class="highlighter-rouge">parent</code> de outro, ele também passa a gerencia o seu ciclo de vida, resumindo, ele mata seus filhos (isso soa cruel). Importante notar que a ordem que os objetos são destruídos do nível mais alto para o mais baixo e seguindo a ordem de inserção no mesmo nível.</p>
+<h3 id="observação-sobre-o-delete">Observação sobre o <code class="highlighter-rouge">delete</code></h3>
+<p>Na documentação diz que é recomentado quando se usa <code class="highlighter-rouge">QObject</code> a usar o método <code class="highlighter-rouge">QObject::deleteLater()</code> para um melhor gerenciamento de eventos e outras coisas que não vem ao caso aqui. Porém na documentação também diz que esse método sóirá funcionar se chamado antes ou durante a execução do <code class="highlighter-rouge">QApplication::exec()</code> que não é o caso do nosso exemplo acima.</p>
+<h3 id="curiosidades-curiosas-sobre-o-deletelater-e-valgrid">Curiosidades curiosas sobre o <code class="highlighter-rouge">deleteLater()</code> e Valgrid</h3>
+<p>Usando o valgrind para ver se esse era mesmo o comportamento desse método, eu obtive os seguintes resultados:</p>
+
+<p>Primeiro o output do codigo usando <code class="highlighter-rouge">delete parent;</code></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==69171== HEAP SUMMARY:
+==69171==     in use at exit: 91,812 bytes in 13 blocks
+==69171==   total heap usage: 178 allocs, 165 frees, 103,440 bytes allocated
+==69171== 
+==69171== LEAK SUMMARY:
+==69171==    definitely lost: 0 bytes in 0 blocks
+==69171==    indirectly lost: 0 bytes in 0 blocks
+==69171==      possibly lost: 0 bytes in 0 blocks
+==69171==    still reachable: 91,812 bytes in 13 blocks
+==69171==         suppressed: 0 bytes in 0 blocks
+==69171== Rerun with --leak-check=full to see details of leaked memory
+==69171== 
+==69171== For counts of detected and suppressed errors, rerun with: -v
+==69171== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+</code></pre></div></div>
+
+<p>Agora o output do codigo usando <code class="highlighter-rouge">parentDelete()</code></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"level 3 Child One"
+"level 3 Child Two"
+"level 2 Child"
+"level 1 Parent"
+
+
+==69222== 
+==69222== HEAP SUMMARY:
+==69222==     in use at exit: 93,550 bytes in 49 blocks
+==69222==   total heap usage: 140 allocs, 91 frees, 99,331 bytes allocated
+==69222== 
+==69222== LEAK SUMMARY:
+==69222==    definitely lost: 0 bytes in 0 blocks
+==69222==    indirectly lost: 0 bytes in 0 blocks
+==69222==      possibly lost: 0 bytes in 0 blocks
+==69222==    still reachable: 93,550 bytes in 49 blocks
+==69222==         suppressed: 0 bytes in 0 blocks
+==69222== Rerun with --leak-check=full to see details of leaked memory
+==69222== 
+==69222== For counts of detected and suppressed errors, rerun with: -v
+==69222== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+</code></pre></div></div>
+
+<p>No output os signal de destroyed não é chamado, mas no LEAK SUMMARY permanece igual ao quando usando <code class="highlighter-rouge">delete</code>.</p>
+
+<p>E a última parte sem deletar o o <code class="highlighter-rouge">parent</code>.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>==69272== 
+==69272== HEAP SUMMARY:
+==69272==     in use at exit: 93,478 bytes in 47 blocks
+==69272==   total heap usage: 138 allocs, 91 frees, 99,259 bytes allocated
+==69272== 
+==69272== LEAK SUMMARY:
+==69272==    definitely lost: 16 bytes in 1 blocks
+==69272==    indirectly lost: 1,650 bytes in 33 blocks
+==69272==      possibly lost: 0 bytes in 0 blocks
+==69272==    still reachable: 91,812 bytes in 13 blocks
+==69272==         suppressed: 0 bytes in 0 blocks
+==69272== Rerun with --leak-check=full to see details of leaked memory
+==69272== 
+==69272== For counts of detected and suppressed errors, rerun with: -v
+==69272== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+</code></pre></div></div>
+
+<p>É possível ver no <code class="highlighter-rouge">LEAK SUMMARY</code> a perca de memória. Agora, o <code class="highlighter-rouge">deleteLater()</code>funciona? ou é bruxária do Valgrind?</p>
+<h3 id="conclusão-sobre-qobject">Conclusão sobre <code class="highlighter-rouge">QObject</code></h3>
+<p>O <code class="highlighter-rouge">QObject</code> demostrou até o momento ter um ótimo recurso com o sistema de árvore que pode deixar o programador um pouco menos preocupado no gerenciamento do ciclo de vida do seus objetos, deixando os parents gerenciando eles. Claro que o <code class="highlighter-rouge">QObject</code> não é só isso e tem muito mais para se conhecer, mas achei interssante as possibilidades que ele nos dá para além de gerenciar recursos também trabalhar com grafos de maneira mais simples.</p>
+<h3 id="conclusão-sobre-o-valgrind">Conclusão sobre o Valgrind</h3>
+<p>Ainda não tenho nenhuma opnião formada sobre o que de fato está acontecendo, se é falso positivo do Valgrid ou se os objetos estão sendo realmente liberados, após mais análises eu atualizo essa parte.</p>

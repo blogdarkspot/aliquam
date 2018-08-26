@@ -11,7 +11,7 @@ tags: [git]
 
 ## O caso.
 
-Possa ser que em algum momento você tenha feito um commit/merge cedo de mais, seja por falta de teste ou esqueceu de implementar algo, não importa. Vamos supor que esse commit/merge não será descartado 100%, talvez sejá necessário só fazer alguns ajustes, mas ele não pode ficar no branch principal até que a manutenção seja feita, como proceder?
+Possa ser que em algum momento você tenha feito um commit/merge cedo de mais, seja por falta de teste ou esqueceu de implementar algo, não importa. Vamos supor que esse commit/merge não será descartado 100%, talvez seja necessário só fazer alguns ajustes, mas ele não pode ficar no branch principal até que a manutenção seja feita, como proceder?
 
 Usando como o exemplo o código abaixo, o primeiro ```std::cout``` está com o texto errado, somente o segundo está correto, mas os dois foram feitos no mesmo commit.
 

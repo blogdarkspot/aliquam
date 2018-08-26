@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Cuidado com o git revert"
-description: "Usando git reverter modificações temporariamente"
+description: "Usando git revert para reverter modificações temporariamente"
 date: 2018-08-25 12:50:00
 author: "Fábio da Silva Santana"
 category: programacao

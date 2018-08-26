@@ -26,10 +26,7 @@ int main(int argc, char **argv)
 }
 ~~~
 
-![commit one](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_one.png)
-Primeiro commit
-
-![ccmake imagem 1](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_one.png)
+![commit one](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_one.PNG)
 
 ![commit two](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_two.png)
 Segundo commit

@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 ![commit one](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_one.png)
 Primeiro commit
 
-![ccmake imagem 1](../img/posts/2017-04-23-find-lib-with-cmake/find-lib-with-cmake-1.png)
+![ccmake imagem 1](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_one.png)
 
 ![commit two](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_two.png)
 Segundo commit

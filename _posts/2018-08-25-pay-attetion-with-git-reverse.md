@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Cuidado com o git reverse"
+title: "Cuidado com o git revert"
 description: "Usando git reverter modificações temporariamente"
 date: 2018-08-25 12:50:00
 author: "Fábio da Silva Santana"
@@ -30,9 +30,10 @@ int main(int argc, char **argv)
 
 ![commit one](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_one.PNG)
 
+
 ![commit two](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_two.PNG)
 
-## Uma possível Solução
+## Uma possível solução
 
 Primeiro passo aqui é fazer um novo branch ```git checkout -b fix-feature``` por exemplo e usar ```git reverse HEAD``` no master para reverter o último commit. Assim temos o seguinte histórico de commits:
 
@@ -40,7 +41,7 @@ Primeiro passo aqui é fazer um novo branch ```git checkout -b fix-feature``` po
 
 ![commit four](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_four.PNG)
 
-Nesse momento, se você fizer as alterações no novo branch e fazer o merge vai ocorrer um problema, o código do commit ```new feature``` será perdido. O motivo é que o commit ```revert new feature``` irá entrar no merge e na resolução de conflitos ele irá apagar as alterações do ```new feature```:
+Nesse momento, se você fizer as alterações no novo branch e fazer o merge, vai ocorrer um problema, o código do commit ```new feature``` será perdido. O motivo é que o commit ```revert new feature``` irá entrar no merge e na resolução de conflitos ele irá apagar as alterações do ```new feature```:
 
 ![commit five](../img/posts/2018-08-25-pay-attention-with-git-reverse/commit_five.PNG)
 

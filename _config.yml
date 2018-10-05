@@ -1,82 +1,28 @@
+# Site settings
+title:          Dark Spot
+description:    "Programming Thinks"
+baseurl:        "http://blogdarkspot.github.io"
+url:            "http://blogdarkspot.github.io"
+# Author
+author:
+  name:         Fábio da Silva Santana
+  url:          
+  email:        fabio.ssantana.dev@gmail.com
 
-##########################################
-#     Change these variables !important
-##########################################
+# Build settings
+markdown:       kramdown
 
-# Set this for Copyright in the footer
-owner: Fábio da Silva Santana
-
-# Optional quote in the footer
-# To disable set enable to false
-quote:
-  enable: true
-  quote: A dúvida é o principio da sabedoria
-  author: Aristóteles
-
-# Set this to your main site title. If page doesn't have its own title,
-# then this title will be used.
-title: Darkspot Blogue
-
-
-# Following needed for disqus integration
-# Set your 'disqus' account name
-disqus: blogdarkspot
-
-# Uncomment if deployed locally
-#url: https://localhost:4000
-
-# Set your host if deployed not locally
-# For example "https://yourGitHub.github.io"
-url: hhtp://blogdarkspot.github.io
-name: Fábio da Silva Santana
-description: Um blog de ciências exatas
-
-# Change this to your base URL starting with forward slash if site is in gh-pages branch
-# For example /branchName
-# NOTE! only change if site is NOT in master's branch
-baseurl:
-
-# Change this to your google analytics ID
-google_analytics: UA-103040028-1
-
-# Contact form pupublic key
-contact_PK:
-
-##########################################
-#          Optional variables
-##########################################
-
-# Set maximum posts per page
-paginate: 5
-
-# Set permalink
-permalink: /:categories/:title
-
-# MathJax support
-math: true
-
-collections:
-- definitions
-
-##########################################
-#          Do not change these variables
-##########################################
-
-include:
-  - _pages
-
+# Assets
 sass:
-  sass_dir: _sass
-sass:
-    style: compressed
+  sass_dir:     _sass
+  style:        compressed
 
-gems:
+# Gems
+plugins:
+  - jekyll-feed
   - jekyll-paginate
-  - jekyll-sitemap # add /sitemap.xml file
+  # - jemoji #Uncomment this to allow emoji in your post
 
-paginate_path: /_pages/page:num
-
-highlighter: rouge
-markdown: kramdown
-kramdown:
-  input: GFM
+# Permalinks
+permalink:      /:year-:month-:day/:title
+paginate:       5

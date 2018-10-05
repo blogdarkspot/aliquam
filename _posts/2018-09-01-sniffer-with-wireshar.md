@@ -9,15 +9,18 @@ comments: true
 tag: [Debug, Tools]
 ---
 
-Essa semana me deparei com um bug um pouco chato de resolver. Os dados aparentemente saem do
- servidor, mas não chegam ao cliente. Debugando o código do servidor e cliente, não era possível encontrar um error logo de cara. 
- Para ter mais detalhes do problema, pensei em observar a transferência de dados do servidor para o cliente. 
- Lembrei do [Wireshark](https://www.wireshark.org/){:target="_blank"}, usei ela algumas vezes para monitorar trafego em usb. 
+Essa semana me deparei com um bug um pouco chato de resolver. Os dados saem aparente saem do
+ servido, mas não chegam no cliente. O debug no código do servidor e cliente estava tudo 
+ "Ok". Para ter mais detalhes do problema, precisava saber se os dados estavam mesmo sendo
+  transferidos para o cliente. Lembrei do [Wireshark](https://www.wireshark.org/){:target="_blank"} que usava 
+  no estágio, ela serve para monitorar transmissão de dados em vários tipos de interface. 
+  Esse tutorial usa uma VM por esse motivo 
+  [Loopback](https://wiki.wireshark.org/CaptureSetup/Loopback){:target="_blank"} .
 
-## Iniciando o Wireshark
-
-Na página inicial do Wireshark 2.6.3 teremos as interfaces disponiveis para monitorar, imagem 1. 
-Inicie a caputra dos pacotes selecionando a interface deseja e clicando na barbatana azul, imagem 2.
+Na página inicial do Wireshark 2.6.3 é apresentada várias interfaces,
+ imagem 1. No caso do tutorial será selecionada à interface da 
+ [VMWare](https://www.vmware.com/){:target="_blank"}. Inicie a caputra dos pactes clicando 
+ na barbatana azul, e a caputa de pacotes irá começar, imagem 2.
 
  ![Wireshark](../img/posts/2018-09-01-wireshark/wireshark_one.PNG)
 
@@ -25,12 +28,19 @@ Inicie a caputra dos pacotes selecionando a interface deseja e clicando na barba
 
 ## Filtrando as informações
 
-Se olharmos a imagem 2 toda informação que passa pela interface é capturada, mas podemos reduzir a quantidade de informações 
- usando ![Filtros](https://wiki.wireshark.org/DisplayFilters){:target="_blank"}. 
+Se olharmos a imagem 2 tem muita informação que não é interressante para nós no momento.
+ Podemos reduzir a quantidade de informações 
+ usando ![Filtros](https://wiki.wireshark.org/DisplayFilters){:target="_blank"} 
+ e ele será baseado no servidor como source. 
+ Como estamos trabalhando com TCP/IP, vamos precisar do: ip da maquina e a porta que o server
+  está usando.
+
 
  ![Wireshark_3](../img/posts/2018-09-01-wireshark/wireshark_three.PNG)
 
-Na imagem acima temos o seguinte filtro `ip.src == 192.168.164.129 and tcp.srcport == 3000 `, que pode ser interpretado da seguite forma; Moste os pacotes que são enviados pelo `ip 192.168.164.129` através da `porta tcp 3000`.
+
+Na imagem acima fizemos um filtro baseado no ip e tcp port do source (Quem envia os dados),
+ isso siginifca que o wireshark só irá mostrar as informações quando o servido enviar algo.
 
 > Observação: Filtros é um assunto bem extenso, para mais informações de como criar veja   
  ![aqui](https://wiki.wireshark.org/DisplayFilters){:target="_blank"}.
@@ -39,11 +49,11 @@ Na imagem acima temos o seguinte filtro `ip.src == 192.168.164.129 and tcp.srcpo
 
 Após fazer o filtro e alguns requests, nossa tela será populada com informações divididas em 3 espaços que são: 
 
-- *Package List* com o histórico de envios e recebimentos dos pacotes;
+- Package List com o histórico de envios e recebimentos dos pacotes;
 
-- *Package Details* com informações detalhadas de algum pacote selecionado no package list;
+- Package Details com informações detalhadas de algum pacote selecionado no package list;
 
-- *Package Data* que mostra os bytes que foram enviados com o pacote.
+- Package Data que mostra os bytes que foram enviados com o pacote;
 
  ![Wireshark_4](../img/posts/2018-09-01-wireshark/wireshark_four.PNG)
 
